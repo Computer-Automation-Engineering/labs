@@ -1,0 +1,16 @@
+Basic Git Instructions. 
+
+# show me what the current status is of my commits, and my branch.
+Run: git status
+
+# Show me what branch I am on, and what branches are present.am
+Run: git branch
+
+# Add files to my commit
+Run: git add <file-name> or git add . (Note: The . - it means add all. Be careful with this.)
+
+# Make a comment on any files that are added to the commit
+Run: git commit -m "This is the message" or git commit -am "This is the message" (Note: the -am is all files previously in a commit. It wont work with brand new files)
+
+# Upload!
+Run: git push

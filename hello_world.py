@@ -1,3 +1,3 @@
 #!/usr/bin/env python3
-
-print("Hello World")
+Name = imput("tell me your name")
+print(f "Hello" {Name})

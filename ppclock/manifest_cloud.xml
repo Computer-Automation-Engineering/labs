@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<OfficeApp xmlns="http://schemas.microsoft.com/office/appforoffice/1.1" 
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+           xmlns:bt="http://schemas.microsoft.com/office/officeappbasictypes/1.0" 
+           xmlns:ov="http://schemas.microsoft.com/office/taskpaneappversionoverrides" 
+           xsi:type="TaskPaneApp">
+
+  <!-- Begin Basic Settings: Add-in metadata, used for all versions of Office unless override provided. -->
+  <Id>12345678-1234-1234-1234-123456789999</Id>
+  <Version>1.0.0.0</Version>
+  <ProviderName>PPClock Developer</ProviderName>
+  <DefaultLocale>en-US</DefaultLocale>
+  <DisplayName DefaultValue="PPClock - Cloud Timer"/>
+  <Description DefaultValue="Professional countdown timer for PowerPoint presentations. Cloud-hosted, no Python required. Perfect for presentation timing and audience engagement."/>
+  <IconUrl DefaultValue="https://YOUR-CLOUD-HOST.com/assets/icon-32.png"/>
+  <HighResolutionIconUrl DefaultValue="https://YOUR-CLOUD-HOST.com/assets/icon-80.png"/>
+  <SupportUrl DefaultValue="https://YOUR-CLOUD-HOST.com/support"/>
+  <AppDomains>
+    <AppDomain>https://YOUR-CLOUD-HOST.com</AppDomain>
+  </AppDomains>
+  
+  <!-- End Basic Settings. -->
+
+  <!-- Begin TaskPane Mode integration. This section is used if there are no VersionOverrides or if the Office client version does not support add-in commands. -->
+  <Hosts>
+    <Host Name="Presentation"/>
+  </Hosts>
+  <DefaultSettings>
+    <SourceLocation DefaultValue="https://YOUR-CLOUD-HOST.com/ppclock_standalone.html"/>
+  </DefaultSettings>
+  <!-- End TaskPane Mode integration.  -->
+
+  <Permissions>ReadWriteDocument</Permissions>
+
+  <!-- Begin Add-in Commands Mode integration. -->
+  <VersionOverrides xmlns="http://schemas.microsoft.com/office/taskpaneappversionoverrides" xsi:type="VersionOverridesV1_0">
+
+    <!-- The Hosts node is required. -->
+    <Hosts>
+      <!-- Each host can have a different set of commands. -->
+      <!-- PowerPoint host is Presentation. -->
+      <Host xsi:type="Presentation">
+        <!-- Form factor: desktop, mobile, and tablet. -->
+        <DesktopFormFactor>
+          <!-- Gets the first ribbon tab ID. -->
+          <GetStarted>
+            <!-- Title of the Getting Started callout. resid points to a ShortString resource -->
+            <Title resid="PPClock.GetStarted.Title"/>
+            <!-- Description of the Getting Started callout. resid points to a LongString resource -->
+            <Description resid="PPClock.GetStarted.Description"/>
+            <!-- Points to a URL resource which details how the add-in should be used. -->
+            <LearnMoreUrl resid="PPClock.GetStarted.LearnMoreUrl"/>
+          </GetStarted>
+          
+          <!-- Extension point: ribbon tab. -->
+          <ExtensionPoint xsi:type="PrimaryCommandSurface">
+            <OfficeTab id="TabHome">
+              <Group id="PPClock.Group1">
+                <Label resid="PPClock.Group1Label"/>
+                <Icon>
+                  <bt:Image size="16" resid="PPClock.tpicon_16x16"/>
+                  <bt:Image size="32" resid="PPClock.tpicon_32x32"/>
+                  <bt:Image size="80" resid="PPClock.tpicon_80x80"/>
+                </Icon>
+
+                <!-- Control: Button for opening task pane. -->
+                <Control xsi:type="Button" id="PPClock.TaskpaneButton">
+                  <Label resid="PPClock.TaskpaneButton.Label"/>
+                  <Supertip>
+                    <Title resid="PPClock.TaskpaneButton.Label"/>
+                    <Description resid="PPClock.TaskpaneButton.Tooltip"/>
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="PPClock.tpicon_16x16"/>
+                    <bt:Image size="32" resid="PPClock.tpicon_32x32"/>
+                    <bt:Image size="80" resid="PPClock.tpicon_80x80"/>
+                  </Icon>
+
+                  <!-- Launch the task pane when the button is clicked. -->
+                  <Action xsi:type="ShowTaskpane">
+                    <TaskpaneId>ButtonId1</TaskpaneId>
+                    <SourceLocation resid="PPClock.Taskpane.Url"/>
+                  </Action>
+                </Control>
+              </Group>
+            </OfficeTab>
+          </ExtensionPoint>
+        </DesktopFormFactor>
+      </Host>
+    </Hosts>
+
+    <!-- Resource definitions for strings, URLs, and images. -->
+    <Resources>
+      <bt:Images>
+        <bt:Image id="PPClock.tpicon_16x16" DefaultValue="https://YOUR-CLOUD-HOST.com/assets/icon-16.png"/>
+        <bt:Image id="PPClock.tpicon_32x32" DefaultValue="https://YOUR-CLOUD-HOST.com/assets/icon-32.png"/>
+        <bt:Image id="PPClock.tpicon_80x80" DefaultValue="https://YOUR-CLOUD-HOST.com/assets/icon-80.png"/>
+      </bt:Images>
+      <bt:Urls>
+        <bt:Url id="PPClock.Taskpane.Url" DefaultValue="https://YOUR-CLOUD-HOST.com/ppclock_standalone.html"/>
+        <bt:Url id="PPClock.GetStarted.LearnMoreUrl" DefaultValue="https://YOUR-CLOUD-HOST.com/help"/>
+      </bt:Urls>
+      <bt:ShortStrings>
+        <bt:String id="PPClock.TaskpaneButton.Label" DefaultValue="PPClock Timer"/>
+        <bt:String id="PPClock.Group1Label" DefaultValue="Presentation Tools"/>
+        <bt:String id="PPClock.GetStarted.Title" DefaultValue="Get started with PPClock!"/>
+      </bt:ShortStrings>
+      <bt:LongStrings>
+        <bt:String id="PPClock.TaskpaneButton.Tooltip" DefaultValue="Open PPClock countdown timer - no Python required!"/>
+        <bt:String id="PPClock.GetStarted.Description" DefaultValue="Your cloud-hosted PPClock add-in is ready! Click the PPClock Timer button to start managing your presentation timing."/>
+      </bt:LongStrings>
+    </Resources>
+  </VersionOverrides>
+  <!-- End Add-in Commands Mode integration. -->
+
+</OfficeApp>

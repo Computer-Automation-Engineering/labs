@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PPClock - Countdown Timer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            min-width: 350px;
+        }
+        
+        .setup-screen {
+            display: block;
+        }
+        
+        .timer-screen {
+            display: none;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            font-weight: 300;
+        }
+        
+        .input-group {
+            margin: 20px 0;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 10px;
+            color: #34495e;
+            font-weight: 500;
+        }
+        
+        input[type="number"] {
+            width: 100px;
+            padding: 15px;
+            font-size: 18px;
+            border: 2px solid #bdc3c7;
+            border-radius: 10px;
+            text-align: center;
+            transition: border-color 0.3s;
+        }
+        
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        
+        .time-display {
+            font-size: 4em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin: 30px 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .time-finished {
+            color: #e74c3c;
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .controls {
+            margin: 20px 0;
+        }
+        
+        button {
+            padding: 15px 30px;
+            margin: 10px;
+            font-size: 16px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+        
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+        
+        .btn-warning {
+            background: #f39c12;
+            color: white;
+        }
+        
+        .btn-warning:hover {
+            background: #e67e22;
+        }
+        
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+        
+        .btn-success {
+            background: #27ae60;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #229954;
+        }
+        
+        .small-window {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 250px;
+            background: rgba(44, 62, 80, 0.95);
+            color: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            cursor: move;
+        }
+        
+        .small-window .time-display {
+            font-size: 2.5em;
+            color: white;
+            margin: 10px 0;
+        }
+        
+        .small-window .controls button {
+            padding: 8px 15px;
+            font-size: 12px;
+            margin: 5px;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: #ecf0f1;
+            border-radius: 5px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3498db, #2ecc71);
+            transition: width 1s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Setup Screen -->
+        <div id="setupScreen" class="setup-screen">
+            <h1>PPClock</h1>
+            <p style="color: #7f8c8d; margin-bottom: 30px;">Professional Countdown Timer</p>
+            
+            <div class="input-group">
+                <label for="minutes">Minutes:</label>
+                <input type="number" id="minutes" min="0" max="999" value="5">
+            </div>
+            
+            <div class="input-group">
+                <label for="seconds">Additional Seconds:</label>
+                <input type="number" id="seconds" min="0" max="59" value="0">
+            </div>
+            
+            <button class="btn-primary" onclick="startTimer()">Start Countdown</button>
+        </div>
+        
+        <!-- Timer Screen -->
+        <div id="timerScreen" class="timer-screen">
+            <h1>PPClock</h1>
+            
+            <div class="progress-bar">
+                <div id="progressFill" class="progress-fill"></div>
+            </div>
+            
+            <div id="timeDisplay" class="time-display">05:00</div>
+            
+            <div class="controls">
+                <button id="pauseBtn" class="btn-warning" onclick="togglePause()">Pause</button>
+                <button class="btn-danger" onclick="stopTimer()">Stop</button>
+                <button class="btn-primary" onclick="toggleSmallWindow()">Pop Out</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Small Movable Window -->
+    <div id="smallWindow" class="small-window" style="display: none;">
+        <div id="smallTimeDisplay" class="time-display">05:00</div>
+        <div class="controls">
+            <button id="smallPauseBtn" class="btn-warning" onclick="togglePause()">Pause</button>
+            <button class="btn-danger" onclick="stopTimer()">Stop</button>
+            <button class="btn-primary" onclick="toggleSmallWindow()">Dock</button>
+        </div>
+    </div>
+
+    <script>
+        class PPClock {
+            constructor() {
+                this.totalSeconds = 0;
+                this.remainingSeconds = 0;
+                this.isRunning = false;
+                this.isPaused = false;
+                this.interval = null;
+                this.originalSeconds = 0;
+                this.isSmallWindow = false;
+                
+                this.setupDragging();
+            }
+            
+            setupDragging() {
+                let isDragging = false;
+                let currentX;
+                let currentY;
+                let initialX;
+                let initialY;
+                let xOffset = 0;
+                let yOffset = 0;
+                
+                const smallWindow = document.getElementById('smallWindow');
+                
+                smallWindow.addEventListener('mousedown', (e) => {
+                    if (e.target.tagName !== 'BUTTON') {
+                        initialX = e.clientX - xOffset;
+                        initialY = e.clientY - yOffset;
+                        isDragging = true;
+                    }
+                });
+                
+                document.addEventListener('mousemove', (e) => {
+                    if (isDragging) {
+                        currentX = e.clientX - initialX;
+                        currentY = e.clientY - initialY;
+                        
+                        xOffset = currentX;
+                        yOffset = currentY;
+                        
+                        smallWindow.style.left = currentX + 'px';
+                        smallWindow.style.top = currentY + 'px';
+                        smallWindow.style.right = 'auto';
+                    }
+                });
+                
+                document.addEventListener('mouseup', () => {
+                    isDragging = false;
+                });
+            }
+            
+            formatTime(seconds) {
+                const hours = Math.floor(seconds / 3600);
+                const minutes = Math.floor((seconds % 3600) / 60);
+                const secs = seconds % 60;
+                
+                if (hours > 0) {
+                    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+                } else {
+                    return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+                }
+            }
+            
+            updateDisplay() {
+                const timeStr = this.formatTime(this.remainingSeconds);
+                document.getElementById('timeDisplay').textContent = timeStr;
+                document.getElementById('smallTimeDisplay').textContent = timeStr;
+                
+                // Update progress bar
+                const progress = ((this.originalSeconds - this.remainingSeconds) / this.originalSeconds) * 100;
+                document.getElementById('progressFill').style.width = progress + '%';
+                
+                // Change color when time is almost up
+                if (this.remainingSeconds <= 10 && this.remainingSeconds > 0) {
+                    document.getElementById('timeDisplay').style.color = '#e74c3c';
+                    document.getElementById('smallTimeDisplay').style.color = '#e74c3c';
+                } else if (this.remainingSeconds === 0) {
+                    document.getElementById('timeDisplay').classList.add('time-finished');
+                    document.getElementById('smallTimeDisplay').classList.add('time-finished');
+                }
+            }
+            
+            start(minutes, seconds) {
+                this.totalSeconds = (minutes * 60) + seconds;
+                this.remainingSeconds = this.totalSeconds;
+                this.originalSeconds = this.totalSeconds;
+                this.isRunning = true;
+                this.isPaused = false;
+                
+                // Show timer screen
+                document.getElementById('setupScreen').style.display = 'none';
+                document.getElementById('timerScreen').style.display = 'block';
+                
+                this.updateDisplay();
+                this.startInterval();
+            }
+            
+            startInterval() {
+                this.interval = setInterval(() => {
+                    if (!this.isPaused && this.remainingSeconds > 0) {
+                        this.remainingSeconds--;
+                        this.updateDisplay();
+                        
+                        if (this.remainingSeconds === 0) {
+                            this.finish();
+                        }
+                    }
+                }, 1000);
+            }
+            
+            togglePause() {
+                this.isPaused = !this.isPaused;
+                
+                const pauseButtons = [document.getElementById('pauseBtn'), document.getElementById('smallPauseBtn')];
+                
+                if (this.isPaused) {
+                    pauseButtons.forEach(btn => {
+                        btn.textContent = 'Resume';
+                        btn.className = 'btn-success';
+                    });
+                } else {
+                    pauseButtons.forEach(btn => {
+                        btn.textContent = 'Pause';
+                        btn.className = 'btn-warning';
+                    });
+                }
+            }
+            
+            stop() {
+                this.isRunning = false;
+                this.isPaused = false;
+                
+                if (this.interval) {
+                    clearInterval(this.interval);
+                    this.interval = null;
+                }
+                
+                // Reset displays
+                document.getElementById('timeDisplay').classList.remove('time-finished');
+                document.getElementById('smallTimeDisplay').classList.remove('time-finished');
+                document.getElementById('timeDisplay').style.color = '#2c3e50';
+                document.getElementById('smallTimeDisplay').style.color = 'white';
+                
+                // Hide small window
+                document.getElementById('smallWindow').style.display = 'none';
+                this.isSmallWindow = false;
+                
+                // Show setup screen
+                document.getElementById('setupScreen').style.display = 'block';
+                document.getElementById('timerScreen').style.display = 'none';
+            }
+            
+            finish() {
+                if (this.interval) {
+                    clearInterval(this.interval);
+                    this.interval = null;
+                }
+                
+                // Play notification sound (if available)
+                try {
+                    const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBjuFz/DNeSsGKn/M7+ONSA0PU6np9q1cEwg+ltryxnkpBSl+zO/ej0s');
+                    audio.play();
+                } catch (e) {
+                    // Fallback for browsers that don't support audio
+                }
+                
+                // Visual notification
+                alert('⏰ Time\'s up! Your countdown has finished.');
+                
+                this.stop();
+            }
+            
+            toggleSmallWindow() {
+                const smallWindow = document.getElementById('smallWindow');
+                const container = document.querySelector('.container');
+                
+                if (!this.isSmallWindow) {
+                    smallWindow.style.display = 'block';
+                    container.style.display = 'none';
+                    this.isSmallWindow = true;
+                } else {
+                    smallWindow.style.display = 'none';
+                    container.style.display = 'flex';
+                    this.isSmallWindow = false;
+                }
+            }
+        }
+        
+        // Initialize the timer
+        const ppClock = new PPClock();
+        
+        // Global functions for HTML onclick events
+        function startTimer() {
+            const minutes = parseInt(document.getElementById('minutes').value) || 0;
+            const seconds = parseInt(document.getElementById('seconds').value) || 0;
+            
+            if (minutes === 0 && seconds === 0) {
+                alert('Please enter a valid time greater than 0.');
+                return;
+            }
+            
+            ppClock.start(minutes, seconds);
+        }
+        
+        function togglePause() {
+            ppClock.togglePause();
+        }
+        
+        function stopTimer() {
+            ppClock.stop();
+        }
+        
+        function toggleSmallWindow() {
+            ppClock.toggleSmallWindow();
+        }
+        
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space' && ppClock.isRunning) {
+                e.preventDefault();
+                togglePause();
+            } else if (e.code === 'Escape' && ppClock.isRunning) {
+                stopTimer();
+            }
+        });
+    </script>
+</body>
+</html>

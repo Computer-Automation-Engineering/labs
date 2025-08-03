@@ -70,13 +70,35 @@
             border-color: #3498db;
         }
         
+        select {
+            width: 150px;
+            padding: 10px;
+            font-size: 14px;
+            border: 2px solid #bdc3c7;
+            border-radius: 10px;
+            background: white;
+            transition: border-color 0.3s;
+        }
+        
+        select:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        
         .time-display {
             font-size: 4em;
             font-weight: bold;
             color: #2c3e50;
             margin: 30px 0;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            transition: font-size 0.3s ease;
         }
+        
+        /* Font size variations */
+        .time-display.font-small { font-size: 2em; }
+        .time-display.font-medium { font-size: 3em; }
+        .time-display.font-large { font-size: 4em; }
+        .time-display.font-xlarge { font-size: 5.5em; }
         
         .time-finished {
             color: #e74c3c;
@@ -158,7 +180,14 @@
             font-size: 2.5em;
             color: white;
             margin: 10px 0;
+            transition: font-size 0.3s ease;
         }
+        
+        /* Font size variations for small window */
+        .small-window .time-display.font-small { font-size: 1.5em; }
+        .small-window .time-display.font-medium { font-size: 2em; }
+        .small-window .time-display.font-large { font-size: 2.5em; }
+        .small-window .time-display.font-xlarge { font-size: 3.5em; }
         
         .small-window .controls button {
             padding: 8px 15px;
@@ -197,6 +226,16 @@
             <div class="input-group">
                 <label for="seconds">Additional Seconds:</label>
                 <input type="number" id="seconds" min="0" max="59" value="0">
+            </div>
+            
+            <div class="input-group">
+                <label for="fontSize">Display Size:</label>
+                <select id="fontSize">
+                    <option value="font-small">Small</option>
+                    <option value="font-medium">Medium</option>
+                    <option value="font-large" selected>Large</option>
+                    <option value="font-xlarge">Extra Large</option>
+                </select>
             </div>
             
             <button class="btn-primary" onclick="startTimer()">Start Countdown</button>
@@ -240,6 +279,7 @@
                 this.interval = null;
                 this.originalSeconds = 0;
                 this.isSmallWindow = false;
+                this.fontSizeClass = 'font-large'; // Default font size
                 
                 this.setupDragging();
             }
@@ -320,9 +360,16 @@
                 this.isRunning = true;
                 this.isPaused = false;
                 
+                // Get font size selection
+                this.fontSizeClass = document.getElementById('fontSize').value;
+                
                 // Show timer screen
                 document.getElementById('setupScreen').style.display = 'none';
                 document.getElementById('timerScreen').style.display = 'block';
+                
+                // Apply font size to displays
+                document.getElementById('timeDisplay').className = `time-display ${this.fontSizeClass}`;
+                document.getElementById('smallTimeDisplay').className = `time-display ${this.fontSizeClass}`;
                 
                 this.updateDisplay();
                 this.startInterval();

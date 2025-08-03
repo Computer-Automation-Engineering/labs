@@ -236,3 +236,82 @@ TECHNICAL IMPLEMENTATION:
 - User-friendly error messages across all platforms
 
 This enhancement makes PPClock more versatile for short-duration timing needs while maintaining robust input validation!
+
+[User Enhancement Request - Font Size Options]
+PLANNING PHASE:
+- Add font size selection for countdown display across all three versions
+- Implement size options: Small, Medium, Large, Extra Large
+- Maintain responsive design and readability
+- Store user preference during session
+
+IMPLEMENTATION STRATEGY:
+1. Python version: Add font size selection dialog and dynamic font updates
+2. Web version: Add font size dropdown with CSS class switching
+3. PowerPoint add-in: Add font size controls optimized for task pane
+4. Update all versions to remember font size choice during session
+
+TARGET FONT SIZES:
+- Small: 16px/12pt (compact display)
+- Medium: 20px/15pt (default)
+- Large: 32px/24pt (presentation mode)
+- Extra Large: 48px/36pt (visibility from distance)
+
+PYTHON VERSION IMPLEMENTATION:
+✅ Added font_size attribute to CountdownTimer class (default: 20pt)
+✅ Created get_font_size() method with radio button dialog
+✅ Font options: Small (12pt), Medium (16pt), Large (24pt), Extra Large (36pt)
+✅ Updated create_countdown_window() to use dynamic font size
+✅ Integrated font selection into start_countdown() workflow
+✅ Professional dialog with OK/Cancel buttons and proper styling
+
+TECHNICAL DETAILS - PYTHON:
+- Radio button dialog using tk.Toplevel with grab_set() for modal behavior
+- Dynamic font configuration: font=('Arial', self.font_size, 'bold')
+- Font selection occurs after time input, before countdown window creation
+- Maintains tkinter styling consistency with blue/gray button theme
+
+WEB VERSION IMPLEMENTATION:
+✅ Added CSS font size classes: font-small, font-medium, font-large, font-xlarge
+✅ Created dropdown selector for font size in setup screen
+✅ Added smooth transitions with transition: font-size 0.3s ease
+✅ Implemented separate sizing for main display and small popup window
+✅ Font sizes: 2em/3em/4em/5.5em for main, 1.5em/2em/2.5em/3.5em for popup
+✅ Integrated font selection into start() method with class switching
+
+TECHNICAL DETAILS - WEB:
+- CSS class switching: document.getElementById('timeDisplay').className = `time-display ${fontSizeClass}`
+- Responsive sizing for both main timer and draggable popup window
+- Font selection stored in this.fontSizeClass and applied to both displays
+- Maintains visual consistency with smooth animations
+
+POWERPOINT ADD-IN IMPLEMENTATION:
+✅ Added CSS font size classes optimized for task pane constraints
+✅ Created compact dropdown selector integrated with Office styling
+✅ Font sizes: 1.8em/2.5em/3em/4em with adjusted padding for each size
+✅ Integrated font selection into start() method
+✅ Optimized for PowerPoint task pane interface dimensions
+
+TECHNICAL DETAILS - POWERPOINT ADD-IN:
+- Compact font selector: 120px width with Office-compatible styling
+- Dynamic padding adjustment based on font size for better spacing
+- Single display optimization (no popup window in task pane)
+- Font selection integrated with Office.js workflow
+
+FONT SIZE ENHANCEMENT SUMMARY:
+✅ ALL THREE VERSIONS now include font size customization
+✅ Consistent user experience across Python desktop, web, and PowerPoint
+✅ Four size options: Small, Medium, Large, Extra Large
+✅ Platform-optimized implementations:
+   - Python: Modal dialog with radio buttons
+   - Web: Dropdown with smooth CSS transitions
+   - PowerPoint: Compact dropdown for task pane
+✅ Enhanced accessibility and presentation flexibility
+✅ Maintains professional styling and user interface consistency
+
+FINAL FONT SIZE SPECIFICATIONS:
+- Python: 12pt, 16pt, 24pt, 36pt (tkinter font units)
+- Web Main: 2em, 3em, 4em, 5.5em 
+- Web Popup: 1.5em, 2em, 2.5em, 3.5em
+- PowerPoint: 1.8em, 2.5em, 3em, 4em (with responsive padding)
+
+This enhancement significantly improves PPClock's usability for different presentation contexts and accessibility needs!

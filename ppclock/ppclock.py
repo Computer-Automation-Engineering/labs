@@ -22,6 +22,8 @@ class CountdownTimer:
         self.countdown_window = None
         self.is_running = False
         self.remaining_seconds = 0
+        self.font_size = 20  # Default font size
+        self.time_label = None
         
     def get_time_input(self):
         """Get countdown time from user via input dialog"""
@@ -62,6 +64,57 @@ class CountdownTimer:
             messagebox.showerror("Error", f"Invalid input: {e}")
             return None
     
+    def get_font_size(self):
+        """Get font size preference from user"""
+        font_options = {
+            "Small (12pt)": 12,
+            "Medium (16pt)": 16, 
+            "Large (24pt)": 24,
+            "Extra Large (36pt)": 36
+        }
+        
+        # Create a simple dialog with radio buttons
+        font_window = tk.Toplevel(self.root)
+        font_window.title("PPClock Font Size")
+        font_window.geometry("250x200")
+        font_window.resizable(False, False)
+        font_window.attributes("-topmost", True)
+        
+        # Center the window
+        font_window.grab_set()
+        
+        selected_size = tk.IntVar(value=20)  # Default to medium-large
+        
+        tk.Label(font_window, text="Choose countdown display size:", 
+                font=('Arial', 10, 'bold')).pack(pady=10)
+        
+        for option, size in font_options.items():
+            tk.Radiobutton(
+                font_window, 
+                text=option, 
+                variable=selected_size, 
+                value=size,
+                font=('Arial', 9)
+            ).pack(anchor='w', padx=20, pady=2)
+        
+        button_frame = tk.Frame(font_window)
+        button_frame.pack(pady=15)
+        
+        def confirm_selection():
+            self.font_size = selected_size.get()
+            font_window.destroy()
+            
+        def cancel_selection():
+            font_window.destroy()
+        
+        tk.Button(button_frame, text="OK", command=confirm_selection, 
+                 bg='#3498db', fg='white', padx=20).pack(side='left', padx=5)
+        tk.Button(button_frame, text="Cancel", command=cancel_selection, 
+                 bg='#95a5a6', fg='white', padx=15).pack(side='left', padx=5)
+        
+        # Wait for window to close
+        font_window.wait_window()
+    
     def format_time(self, seconds):
         """Format seconds into MM:SS or HH:MM:SS"""
         hours = seconds // 3600
@@ -85,11 +138,11 @@ class CountdownTimer:
         # Configure window styling
         self.countdown_window.configure(bg='#2c3e50')
         
-        # Create time display label
+        # Create time display label with dynamic font size
         self.time_label = tk.Label(
             self.countdown_window,
             text=self.format_time(self.remaining_seconds),
-            font=('Arial', 20, 'bold'),
+            font=('Arial', self.font_size, 'bold'),
             fg='#ecf0f1',
             bg='#2c3e50'
         )
@@ -176,6 +229,9 @@ class CountdownTimer:
         if total_seconds is None:
             self.root.quit()
             return
+        
+        # Get font size preference
+        self.get_font_size()
         
         self.remaining_seconds = total_seconds
         self.is_running = True

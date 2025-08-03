@@ -102,7 +102,14 @@
             background: #f8f9fa;
             border-radius: 12px;
             text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+            transition: font-size 0.3s ease;
         }
+        
+        /* Font size variations for PowerPoint add-in */
+        .time-display.font-small { font-size: 1.8em; padding: 10px; }
+        .time-display.font-medium { font-size: 2.5em; padding: 15px; }
+        .time-display.font-large { font-size: 3em; padding: 20px; }
+        .time-display.font-xlarge { font-size: 4em; padding: 25px; }
         
         .time-finished {
             color: #dc3545;
@@ -241,6 +248,16 @@
                 <input type="number" id="seconds" min="0" max="59" value="0">
             </div>
             
+            <div class="input-group">
+                <label for="fontSize">Display Size:</label>
+                <select id="fontSize" style="width: 120px; padding: 8px; border: 1px solid #dee2e6; border-radius: 4px;">
+                    <option value="font-small">Small</option>
+                    <option value="font-medium">Medium</option>
+                    <option value="font-large" selected>Large</option>
+                    <option value="font-xlarge">Extra Large</option>
+                </select>
+            </div>
+            
             <div class="controls">
                 <button class="btn-primary" onclick="startTimer()">Start Countdown</button>
             </div>
@@ -299,6 +316,7 @@
                 this.isPaused = false;
                 this.interval = null;
                 this.originalSeconds = 0;
+                this.fontSizeClass = 'font-large'; // Default font size
                 
                 // Initialize Office.js when ready
                 Office.onReady((info) => {
@@ -368,9 +386,15 @@
                 this.isRunning = true;
                 this.isPaused = false;
                 
+                // Get font size selection
+                this.fontSizeClass = document.getElementById('fontSize').value;
+                
                 // Show timer screen
                 document.getElementById('setupScreen').style.display = 'none';
                 document.getElementById('timerScreen').style.display = 'flex';
+                
+                // Apply font size to display
+                document.getElementById('timeDisplay').className = `time-display ${this.fontSizeClass}`;
                 
                 this.updateDisplay();
                 this.startInterval();

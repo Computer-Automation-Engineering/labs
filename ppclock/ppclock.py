@@ -30,7 +30,7 @@ class CountdownTimer:
             minutes = simpledialog.askinteger(
                 "PPClock Setup",
                 "Enter countdown time in minutes:",
-                minvalue=1,
+                minvalue=0,
                 maxvalue=999
             )
             
@@ -50,6 +50,12 @@ class CountdownTimer:
                 return None
                 
             total_seconds = (minutes * 60) + seconds
+            
+            # Ensure at least 1 second total
+            if total_seconds == 0:
+                messagebox.showwarning("Invalid Time", "Please enter at least 1 second for the countdown.")
+                return None
+                
             return total_seconds
             
         except Exception as e:

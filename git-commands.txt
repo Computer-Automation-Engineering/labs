@@ -1,3 +1,0 @@
-Git Commands Reference
-git init - Initialize repository
-git add . - Add all files

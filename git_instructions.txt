@@ -1,17 +1,198 @@
+=== GIT INSTRUCTIONS REFERENCE ===
 
-# Basic Git Instructions. 
+This file contains comprehensive GIT commands organized by category.
+Reference this file each time you need GIT command help.
 
-# show me what the current status is of my commits, and my branch.
-Run: git status
+=== BASIC SETUP ===
 
-# Show me what branch I am on, and what branches are present.am
-Run: git branch
+git --version
+- Shows the currently installed version of Git
+- Usage: git --version
+- Example: git --version (outputs: git version 2.34.1)
 
-# Add files to my commit
-Run: git add <file-name> or git add . (Note: The . - it means add all. Be careful with this.)
+git config --global user.name "Your Name"
+- Sets your name for all Git repositories on your system
+- Usage: git config --global user.name "FirstName LastName"
+- Example: git config --global user.name "John Doe"
 
-# Make a comment on any files that are added to the commit
-Run: git commit -m "This is the message" or git commit -am "This is the message" (Note: the -am is all files previously in a commit. It wont work with brand new files)
+git config --global user.email "your.email@example.com"
+- Sets your email for all Git repositories on your system
+- Usage: git config --global user.email "email@domain.com"
+- Example: git config --global user.email "john.doe@example.com"
 
-# Upload!
-Run: git push
+git config --list
+- Shows all current Git configuration settings
+- Usage: git config --list
+- Shows user.name, user.email, and other settings
+
+=== REPOSITORY CREATION ===
+
+git init
+- Creates a new Git repository in the current directory
+- Usage: git init
+- Creates .git folder and initializes empty repository
+- Use when starting a new project
+
+git clone [url]
+- Downloads a copy of a remote repository to your local machine
+- Usage: git clone https://github.com/username/repository.git
+- Creates new folder with repository name
+- Example: git clone https://github.com/user/myproject.git
+
+=== BASIC WORKFLOW ===
+
+git status
+- Shows the current state of your working directory
+- Usage: git status
+- Shows modified files, untracked files, and staged changes
+- Use frequently to check what changes you have
+
+git add [filename]
+- Adds a specific file to the staging area
+- Usage: git add filename.txt
+- Example: git add index.html
+
+git add .
+- Adds all modified and new files to the staging area
+- Usage: git add .
+- Stages all changes in current directory and subdirectories
+- Use when you want to stage all changes at once
+
+git commit -m "message"
+- Saves your staged changes with a descriptive message
+- Usage: git commit -m "Your commit message here"
+- Example: git commit -m "Add new login feature"
+- Message should be clear and describe what changed
+
+git log
+- Shows the commit history for the current branch
+- Usage: git log
+- Displays commit hash, author, date, and message
+- Use --oneline for shorter format: git log --oneline
+
+=== VIEWING CHANGES ===
+
+git diff
+- Shows differences between working directory and staging area
+- Usage: git diff
+- Shows what has changed but not yet staged
+
+git diff --staged
+- Shows differences between staging area and last commit
+- Usage: git diff --staged
+- Shows what will be committed
+
+git show [commit]
+- Shows details of a specific commit
+- Usage: git show abc123 (where abc123 is commit hash)
+- Shows changes made in that commit
+
+=== BRANCHING ===
+
+git branch
+- Lists all branches and shows current branch
+- Usage: git branch
+- Current branch is marked with *
+
+git branch [branch-name]
+- Creates a new branch
+- Usage: git branch new-feature
+- Example: git branch bug-fix
+
+git checkout [branch-name]
+- Switches to a different branch
+- Usage: git checkout branch-name
+- Example: git checkout main
+
+git checkout -b [branch-name]
+- Creates a new branch and switches to it
+- Usage: git checkout -b new-feature
+- Combines git branch and git checkout
+
+git merge [branch-name]
+- Merges specified branch into current branch
+- Usage: git merge feature-branch
+- Example: Switch to main, then git merge new-feature
+
+git branch -d [branch-name]
+- Deletes a branch (safe delete)
+- Usage: git branch -d old-branch
+- Only works if branch has been merged
+
+=== REMOTE REPOSITORIES ===
+
+git remote -v
+- Shows all configured remote repositories
+- Usage: git remote -v
+- Shows fetch and push URLs
+
+git remote add origin [url]
+- Adds a new remote repository
+- Usage: git remote add origin https://github.com/user/repo.git
+- 'origin' is the standard name for main remote
+
+git push origin [branch-name]
+- Uploads your commits to remote repository
+- Usage: git push origin main
+- Example: git push origin feature-branch
+
+git push -u origin [branch-name]
+- Sets upstream and pushes branch
+- Usage: git push -u origin main
+- Use -u first time to set tracking
+
+git pull
+- Downloads and merges changes from remote repository
+- Usage: git pull
+- Combines git fetch and git merge
+
+git fetch
+- Downloads changes from remote but doesn't merge
+- Usage: git fetch
+- Use when you want to see changes before merging
+
+=== UNDOING CHANGES ===
+
+git checkout -- [filename]
+- Discards changes in working directory for specific file
+- Usage: git checkout -- filename.txt
+- Reverts file to last committed version
+
+git reset HEAD [filename]
+- Unstages a file (removes from staging area)
+- Usage: git reset HEAD filename.txt
+- File changes remain but are unstaged
+
+git reset --hard HEAD
+- Discards all changes and reverts to last commit
+- Usage: git reset --hard HEAD
+- WARNING: This permanently deletes uncommitted changes
+
+git revert [commit]
+- Creates new commit that undoes changes from specified commit
+- Usage: git revert abc123
+- Safe way to undo committed changes
+
+=== USEFUL SHORTCUTS ===
+
+git add -A
+- Stages all changes (modified, deleted, and new files)
+- Usage: git add -A
+- Alternative to git add .
+
+git commit -am "message"
+- Stages all modified files and commits in one command
+- Usage: git commit -am "Fix bug in login"
+- Only works for files already tracked by Git
+
+git log --oneline
+- Shows condensed commit history
+- Usage: git log --oneline
+- One line per commit with short hash and message
+
+git log --graph
+- Shows commit history with branch visualization
+- Usage: git log --graph --oneline
+- Helpful for seeing branch merges
+
+=== END OF FILE ===

@@ -63,6 +63,33 @@ function Get-AvailablePrinters {
     }
 }
 
+function Invoke-PrintWorksheet {
+    param(
+        [Parameter(Mandatory)][__ComObject]$Worksheet,
+        [int]$Copies = 1,
+        [string]$PrintRange = '',
+        [switch]$PreviewOnly
+    )
+
+    if ($PreviewOnly) {
+        Write-Log "Opening print preview..." -Level 'Success'
+        $Worksheet.PrintPreview()
+    } else {
+        Write-Log "Printing $Copies copies..." -Level 'Success'
+
+        if ($PrintRange) {
+            # Print specific range
+            $rangeObj = $Worksheet.Range($PrintRange)
+            $null = $rangeObj.PrintOut($null, $null, [int]$Copies, $false, $null, $false, $true, $null)
+        } else {
+            # Print entire worksheet
+            $null = $Worksheet.PrintOut($null, $null, [int]$Copies, $false, $null, $false, $true, $null)
+        }
+
+        Write-Log "Print job completed successfully!" -Level 'Success'
+    }
+}
+
 function Try-SetExcelActivePrinter {
     param(
         [Parameter(Mandatory)][__ComObject]$Excel,
@@ -231,23 +258,9 @@ try {
 
     Write-Log "Excel.ActivePrinter -> $($excel.ActivePrinter)" -Level 'Success'
 
-    if ($PreviewOnly) {
-        Write-Log "Opening print preview..." -Level 'Success'
-        $ws.PrintPreview()
-    } else {
-        Write-Log "Printing $Copies copies..." -Level 'Success'
-
-        if ($PrintRange) {
-            # Print specific range
-            $rangeObj = $ws.Range($PrintRange)
-            $null = $rangeObj.PrintOut($null, $null, [int]$Copies, $false, $null, $false, $true, $null)
-        } else {
-            # Print entire worksheet
-            $null = $ws.PrintOut($null, $null, [int]$Copies, $false, $null, $false, $true, $null)
-        }
-
-        Write-Log "Print job completed successfully!" -Level 'Success'
-    }
+    # Call the print function
+    # Invoke-PrintWorksheet -Worksheet $ws -Copies $Copies -PrintRange $PrintRange -PreviewOnly:$PreviewOnly
+    Write-Log "Printing disabled for testing - cell update only" -Level 'Warning'
 
 } catch {
     Write-Log "Error occurred: $($_.Exception.Message)" -Level 'Error'

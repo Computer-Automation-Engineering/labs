@@ -1,0 +1,33 @@
+PEER REVIEW NOTES - Print-ExcelSheet-Enhanced.ps1
+================================================================
+
+Date: 2025-10-12
+Reviewer: [Your Name]
+Script: Print-ExcelSheet-Enhanced.ps1
+
+================================================================
+CHANGE LOG
+================================================================
+
+Change #1 - File Path Update
+----------------------------
+Date: 2025-10-12
+Line: 4-5
+Description: Changed default file path from Windows to Linux format
+- Commented out: [string]$Path  = 'C:\powershell\wip\wip sheet.xlsx'
+- Added new path: [string]$Path  = '/home/jbragdon/Desktop/wip'
+Reason: Adapting script for Linux environment
+
+================================================================
+REVIEW COMMENTS
+================================================================
+
+[Peer review feedback and suggestions will be noted here]
+
+================================================================
+TESTING NOTES
+================================================================
+
+[Testing results and validation notes]
+
+================================================================

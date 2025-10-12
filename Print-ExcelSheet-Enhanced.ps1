@@ -1,7 +1,8 @@
 # Print-ExcelSheet-Enhanced.ps1
 [CmdletBinding()]
 param(
-    [string]$Path  = 'C:\powershell\wip\wip sheet.xlsx',
+    # [string]$Path  = 'C:\powershell\wip\wip sheet.xlsx',
+    [string]$Path  = '/home/jbragdon/Desktop/wip',
     [string]$Sheet = 'wip',
     [string]$Cell  = 'C5',
     [string]$Value = 'PolyPebt',

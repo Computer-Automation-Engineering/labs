@@ -12,6 +12,8 @@ Date: 2025-10-19
 import subprocess
 import os
 import sys
+import json
+from datetime import datetime
 
 class GitLesson:
     """Interactive Git lesson with command execution and feedback"""
@@ -19,10 +21,64 @@ class GitLesson:
     def __init__(self):
         self.lesson_progress = {i: False for i in range(1, 8)}
         self.practice_dir = os.path.join(os.getcwd(), "git_practice_sandbox")
+        self.progress_file = "git_lesson_progress.json"
+        self.user_name = ""
+        self.load_or_create_user()
 
     def clear_screen(self):
         """Clear terminal screen"""
         os.system('clear' if os.name == 'posix' else 'cls')
+
+    def load_or_create_user(self):
+        """Load existing user progress or create new user"""
+        if os.path.exists(self.progress_file):
+            try:
+                with open(self.progress_file, 'r') as f:
+                    data = json.load(f)
+                    self.user_name = data.get('user_name', '')
+                    self.lesson_progress = {int(k): v for k, v in data.get('lesson_progress', {}).items()}
+                    print(f"\nWelcome back, {self.user_name}!")
+                    print(f"Last session: {data.get('last_session', 'Unknown')}")
+                    input("\nPress Enter to continue...")
+            except Exception as e:
+                print(f"Error loading progress: {e}")
+                self.create_new_user()
+        else:
+            self.create_new_user()
+
+    def create_new_user(self):
+        """Create a new user profile"""
+        print("\n" + "="*60)
+        print("WELCOME TO GIT INTERACTIVE LESSONS!")
+        print("="*60)
+        self.user_name = input("\nPlease enter your name: ").strip()
+        if not self.user_name:
+            self.user_name = "Student"
+        print(f"\nHello, {self.user_name}! Let's learn Git together!")
+        input("\nPress Enter to begin...")
+
+    def save_progress(self):
+        """Save user progress to file"""
+        try:
+            data = {
+                'user_name': self.user_name,
+                'lesson_progress': self.lesson_progress,
+                'last_session': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            }
+            with open(self.progress_file, 'w') as f:
+                json.dump(data, f, indent=2)
+            print(f"\n✓ Progress saved for {self.user_name}!")
+        except Exception as e:
+            print(f"\n✗ Error saving progress: {e}")
+
+    def clear_progress(self):
+        """Clear saved progress file"""
+        try:
+            if os.path.exists(self.progress_file):
+                os.remove(self.progress_file)
+                print("\n✓ Progress cleared!")
+        except Exception as e:
+            print(f"\n✗ Error clearing progress: {e}")
 
     def run_command(self, command, cwd=None):
         """Execute a shell command and return output"""
@@ -386,7 +442,7 @@ Try it yourself! I'll guide you if needed.
         """Show learning progress"""
         self.clear_screen()
         print("="*60)
-        print("YOUR LEARNING PROGRESS")
+        print(f"LEARNING PROGRESS - {self.user_name}")
         print("="*60)
 
         lessons = [
@@ -415,7 +471,7 @@ Try it yourself! I'll guide you if needed.
         while True:
             self.clear_screen()
             print("="*60)
-            print("     INTERACTIVE GIT LESSON")
+            print(f"     INTERACTIVE GIT LESSON - {self.user_name}")
             print("="*60)
             print("\nLearn Git with hands-on practice!\n")
 
@@ -435,7 +491,7 @@ Try it yourself! I'll guide you if needed.
             choice = input("\nChoose an option (0-9): ").strip()
 
             if choice == '0':
-                print("\nGreat work! Keep practicing Git!")
+                self.exit_program()
                 break
             elif choice == '1':
                 self.lesson_1_intro()
@@ -458,6 +514,21 @@ Try it yourself! I'll guide you if needed.
             else:
                 print("Invalid choice!")
                 input("Press Enter to continue...")
+
+    def exit_program(self):
+        """Handle program exit with save option"""
+        print("\n" + "="*60)
+        print("SAVE PROGRESS")
+        print("="*60)
+        save_choice = input("\nDo you want to save your progress? (yes/no): ").strip().lower()
+
+        if save_choice in ['yes', 'y']:
+            self.save_progress()
+            print(f"\nGreat work, {self.user_name}! Your progress has been saved.")
+            print("See you next time!")
+        else:
+            self.clear_progress()
+            print(f"\nProgress cleared. See you next time, {self.user_name}!")
 
 if __name__ == "__main__":
     lesson = GitLesson()

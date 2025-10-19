@@ -20,13 +20,70 @@ import subprocess
 import os
 import sys
 import shutil
+import json
+from datetime import datetime
 
 class GitPractice:
     """Interactive Git practice with Claude's guidance"""
 
     def __init__(self):
         self.sandbox_dir = os.path.join(os.getcwd(), "git_practice_sandbox")
+        self.progress_file = "git_practice_progress.json"
+        self.user_name = ""
+        self.challenges_completed = []
+        self.load_or_create_user()
         self.setup_sandbox()
+
+    def load_or_create_user(self):
+        """Load existing user progress or create new user"""
+        if os.path.exists(self.progress_file):
+            try:
+                with open(self.progress_file, 'r') as f:
+                    data = json.load(f)
+                    self.user_name = data.get('user_name', '')
+                    self.challenges_completed = data.get('challenges_completed', [])
+                    print(f"\nWelcome back, {self.user_name}!")
+                    print(f"Challenges completed: {len(self.challenges_completed)}/4")
+                    input("\nPress Enter to continue...")
+            except Exception as e:
+                print(f"Error loading progress: {e}")
+                self.create_new_user()
+        else:
+            self.create_new_user()
+
+    def create_new_user(self):
+        """Create a new user profile"""
+        print("\n" + "="*60)
+        print("WELCOME TO GIT PRACTICE!")
+        print("="*60)
+        self.user_name = input("\nPlease enter your name: ").strip()
+        if not self.user_name:
+            self.user_name = "Student"
+        print(f"\nHello, {self.user_name}! Let's practice Git!")
+        input("\nPress Enter to begin...")
+
+    def save_progress(self):
+        """Save user progress to file"""
+        try:
+            data = {
+                'user_name': self.user_name,
+                'challenges_completed': self.challenges_completed,
+                'last_session': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            }
+            with open(self.progress_file, 'w') as f:
+                json.dump(data, f, indent=2)
+            print(f"\n✓ Progress saved for {self.user_name}!")
+        except Exception as e:
+            print(f"\n✗ Error saving progress: {e}")
+
+    def clear_progress(self):
+        """Clear saved progress file"""
+        try:
+            if os.path.exists(self.progress_file):
+                os.remove(self.progress_file)
+                print("\n✓ Progress cleared!")
+        except Exception as e:
+            print(f"\n✗ Error clearing progress: {e}")
 
     def setup_sandbox(self):
         """Set up a safe practice environment"""
@@ -309,26 +366,39 @@ Steps:
                 if stderr:
                     print(stderr)
 
+        # Mark challenge as completed
+        if challenge_num not in self.challenges_completed:
+            self.challenges_completed.append(challenge_num)
+            print(f"\n✓ Challenge {challenge_num} completed!")
+
     def main_menu(self):
         """Main practice menu"""
         while True:
             print("\n" + "="*60)
-            print("     GIT PRACTICE WITH CLAUDE")
+            print(f"     GIT PRACTICE WITH CLAUDE - {self.user_name}")
             print("="*60)
-            print(f"\nSandbox: {self.sandbox_dir}\n")
+            print(f"\nSandbox: {self.sandbox_dir}")
+            print(f"Challenges completed: {len(self.challenges_completed)}/4\n")
             print("PRACTICE MODES:")
             print("1. Free Practice - Execute any Git commands")
-            print("2. Challenge 1 - Create Your First Commit")
-            print("3. Challenge 2 - Work with Branches")
-            print("4. Challenge 3 - Fix a Mistake")
-            print("5. Challenge 4 - Multiple Commits")
+
+            # Show checkmarks for completed challenges
+            c1 = "✓" if 1 in self.challenges_completed else " "
+            c2 = "✓" if 2 in self.challenges_completed else " "
+            c3 = "✓" if 3 in self.challenges_completed else " "
+            c4 = "✓" if 4 in self.challenges_completed else " "
+
+            print(f"2. [{c1}] Challenge 1 - Create Your First Commit")
+            print(f"3. [{c2}] Challenge 2 - Work with Branches")
+            print(f"4. [{c3}] Challenge 3 - Fix a Mistake")
+            print(f"5. [{c4}] Challenge 4 - Multiple Commits")
             print("6. Reset Sandbox")
             print("0. Exit")
 
             choice = input("\nChoose an option (0-6): ").strip()
 
             if choice == '0':
-                print("\nGreat practice! Keep learning Git!")
+                self.exit_program()
                 break
             elif choice == '1':
                 self.free_practice()
@@ -338,6 +408,21 @@ Steps:
                 self.setup_sandbox()
             else:
                 print("Invalid choice!")
+
+    def exit_program(self):
+        """Handle program exit with save option"""
+        print("\n" + "="*60)
+        print("SAVE PROGRESS")
+        print("="*60)
+        save_choice = input("\nDo you want to save your progress? (yes/no): ").strip().lower()
+
+        if save_choice in ['yes', 'y']:
+            self.save_progress()
+            print(f"\nGreat practice, {self.user_name}! Your progress has been saved.")
+            print("See you next time!")
+        else:
+            self.clear_progress()
+            print(f"\nProgress cleared. See you next time, {self.user_name}!")
 
 if __name__ == "__main__":
     print("="*60)

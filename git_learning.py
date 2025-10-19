@@ -9,6 +9,10 @@ Author: Created for Jason's Git learning journey
 Date: 2025-10-19
 """
 
+import json
+import os
+from datetime import datetime
+
 def lesson_1_intro():
     """Lesson 1: What is Git?"""
     print("\n" + "="*60)
@@ -386,6 +390,63 @@ def review_quiz():
         input("   Press Enter to see answer...")
         print(f"   Answer: {q['answer']}\n")
 
+def load_or_create_user():
+    """Load existing user or create new user"""
+    progress_file = "git_learning_progress.json"
+    user_name = ""
+    lessons_viewed = []
+
+    if os.path.exists(progress_file):
+        try:
+            with open(progress_file, 'r') as f:
+                data = json.load(f)
+                user_name = data.get('user_name', '')
+                lessons_viewed = data.get('lessons_viewed', [])
+                print(f"\nWelcome back, {user_name}!")
+                print(f"Lessons viewed: {len(lessons_viewed)}/7")
+                input("\nPress Enter to continue...")
+        except:
+            user_name = create_new_user()
+    else:
+        user_name = create_new_user()
+
+    return user_name, lessons_viewed, progress_file
+
+def create_new_user():
+    """Create new user profile"""
+    print("\n" + "="*60)
+    print("WELCOME TO GIT LEARNING TUTORIAL!")
+    print("="*60)
+    user_name = input("\nPlease enter your name: ").strip()
+    if not user_name:
+        user_name = "Student"
+    print(f"\nHello, {user_name}! Let's learn Git!")
+    input("\nPress Enter to begin...")
+    return user_name
+
+def save_progress(user_name, lessons_viewed, progress_file):
+    """Save user progress"""
+    try:
+        data = {
+            'user_name': user_name,
+            'lessons_viewed': lessons_viewed,
+            'last_session': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        }
+        with open(progress_file, 'w') as f:
+            json.dump(data, f, indent=2)
+        print(f"\n✓ Progress saved for {user_name}!")
+    except Exception as e:
+        print(f"\n✗ Error saving progress: {e}")
+
+def clear_progress(progress_file):
+    """Clear saved progress"""
+    try:
+        if os.path.exists(progress_file):
+            os.remove(progress_file)
+            print("\n✓ Progress cleared!")
+    except Exception as e:
+        print(f"\n✗ Error clearing progress: {e}")
+
 def main():
     """Main tutorial function"""
     print("="*60)
@@ -393,6 +454,8 @@ def main():
     print("="*60)
     print("\nThis tutorial will teach you Git basics from scratch.")
     print("You'll learn 7 essential lessons about version control.\n")
+
+    user_name, lessons_viewed, progress_file = load_or_create_user()
 
     lessons = [
         ("What is Git?", lesson_1_intro),
@@ -406,24 +469,38 @@ def main():
 
     while True:
         print("\n" + "="*60)
-        print("LESSONS:")
+        print(f"LESSONS - {user_name}")
         print("="*60)
         for i, (title, _) in enumerate(lessons, 1):
-            print(f"{i}. {title}")
-        print("8. Review Quiz")
+            viewed = "✓" if i in lessons_viewed else " "
+            print(f"[{viewed}] {i}. {title}")
+        print(f"[{' '}] 8. Review Quiz")
         print("0. Exit")
 
         choice = input("\nChoose a lesson (0-8): ").strip()
 
         if choice == '0':
-            print("\nGreat work! Keep practicing Git!")
-            print("Remember: git status is your best friend!")
+            print("\n" + "="*60)
+            print("SAVE PROGRESS")
+            print("="*60)
+            save_choice = input("\nDo you want to save your progress? (yes/no): ").strip().lower()
+
+            if save_choice in ['yes', 'y']:
+                save_progress(user_name, lessons_viewed, progress_file)
+                print(f"\nGreat work, {user_name}! Keep practicing Git!")
+                print("Remember: git status is your best friend!")
+            else:
+                clear_progress(progress_file)
+                print(f"\nProgress cleared. See you next time, {user_name}!")
             break
         elif choice == '8':
             review_quiz()
         elif choice.isdigit() and 1 <= int(choice) <= len(lessons):
-            _, lesson_func = lessons[int(choice) - 1]
+            lesson_num = int(choice)
+            _, lesson_func = lessons[lesson_num - 1]
             lesson_func()
+            if lesson_num not in lessons_viewed:
+                lessons_viewed.append(lesson_num)
         else:
             print("Invalid choice. Please enter 0-8.")
 

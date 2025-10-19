@@ -9,6 +9,10 @@ Author: Created for Jason's Git learning journey
 Date: 2025-10-19
 """
 
+import json
+import os
+from datetime import datetime
+
 def exercise_1():
     """Exercise 1: Create Your First Repository"""
     print("\n" + "="*60)
@@ -346,23 +350,89 @@ Add multiplication and division on separate branches,
 then merge them all into main.
 """)
 
-def show_progress():
+def load_or_create_user():
+    """Load existing user or create new user"""
+    progress_file = "git_exercises_progress.json"
+    user_name = ""
+    exercises_completed = []
+
+    if os.path.exists(progress_file):
+        try:
+            with open(progress_file, 'r') as f:
+                data = json.load(f)
+                user_name = data.get('user_name', '')
+                exercises_completed = data.get('exercises_completed', [])
+                print(f"\nWelcome back, {user_name}!")
+                print(f"Exercises completed: {len(exercises_completed)}/6")
+                input("\nPress Enter to continue...")
+        except:
+            user_name = create_new_user()
+    else:
+        user_name = create_new_user()
+
+    return user_name, exercises_completed, progress_file
+
+def create_new_user():
+    """Create new user profile"""
+    print("\n" + "="*60)
+    print("WELCOME TO GIT PRACTICE EXERCISES!")
+    print("="*60)
+    user_name = input("\nPlease enter your name: ").strip()
+    if not user_name:
+        user_name = "Student"
+    print(f"\nHello, {user_name}! Let's practice Git!")
+    input("\nPress Enter to begin...")
+    return user_name
+
+def save_progress(user_name, exercises_completed, progress_file):
+    """Save user progress"""
+    try:
+        data = {
+            'user_name': user_name,
+            'exercises_completed': exercises_completed,
+            'last_session': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        }
+        with open(progress_file, 'w') as f:
+            json.dump(data, f, indent=2)
+        print(f"\n✓ Progress saved for {user_name}!")
+    except Exception as e:
+        print(f"\n✗ Error saving progress: {e}")
+
+def clear_progress(progress_file):
+    """Clear saved progress"""
+    try:
+        if os.path.exists(progress_file):
+            os.remove(progress_file)
+            print("\n✓ Progress cleared!")
+    except Exception as e:
+        print(f"\n✗ Error clearing progress: {e}")
+
+def show_progress(user_name, exercises_completed):
     """Show exercise progress"""
     print("\n" + "="*60)
-    print("YOUR PROGRESS")
+    print(f"YOUR PROGRESS - {user_name}")
     print("="*60)
-    print("""
-Track your completed exercises here:
 
-☐ Exercise 1: Create Your First Repository
-☐ Exercise 2: Practice Staging and Committing
-☐ Exercise 3: Branching Basics
-☐ Exercise 4: Fixing Mistakes
-☐ Exercise 5: Working with Remote Repositories
-☐ Exercise 6: Complete Workflow Project
+    exercises = [
+        "Exercise 1: Create Your First Repository",
+        "Exercise 2: Practice Staging and Committing",
+        "Exercise 3: Branching Basics",
+        "Exercise 4: Fixing Mistakes",
+        "Exercise 5: Working with Remote Repositories",
+        "Exercise 6: Complete Workflow Project"
+    ]
 
-TIP: Mark each with ☑ when you complete it!
-""")
+    print()
+    for i, title in enumerate(exercises, 1):
+        status = "✓" if i in exercises_completed else "☐"
+        print(f"{status} {title}")
+
+    completed = len(exercises_completed)
+    total = len(exercises)
+    percentage = (completed / total) * 100 if total > 0 else 0
+
+    print(f"\nCompleted: {completed}/{total} ({percentage:.0f}%)")
+    input("\nPress Enter to continue...")
 
 def main():
     """Main exercise menu"""
@@ -371,6 +441,8 @@ def main():
     print("="*60)
     print("\nComplete these exercises to master Git!")
     print("Work through them in order.\n")
+
+    user_name, exercises_completed, progress_file = load_or_create_user()
 
     exercises = [
         ("Create Your First Repository", exercise_1),
@@ -383,25 +455,49 @@ def main():
 
     while True:
         print("\n" + "="*60)
-        print("EXERCISES:")
+        print(f"EXERCISES - {user_name}")
         print("="*60)
         for i, (title, _) in enumerate(exercises, 1):
-            print(f"{i}. {title}")
+            completed = "✓" if i in exercises_completed else " "
+            print(f"[{completed}] {i}. {title}")
         print("7. Show Progress")
+        print("8. Mark Exercise as Complete")
         print("0. Exit")
 
-        choice = input("\nChoose an exercise (0-7): ").strip()
+        choice = input("\nChoose an exercise (0-8): ").strip()
 
         if choice == '0':
-            print("\nKeep practicing! Git gets easier with use!")
+            print("\n" + "="*60)
+            print("SAVE PROGRESS")
+            print("="*60)
+            save_choice = input("\nDo you want to save your progress? (yes/no): ").strip().lower()
+
+            if save_choice in ['yes', 'y']:
+                save_progress(user_name, exercises_completed, progress_file)
+                print(f"\nKeep practicing, {user_name}! Git gets easier with use!")
+            else:
+                clear_progress(progress_file)
+                print(f"\nProgress cleared. See you next time, {user_name}!")
             break
         elif choice == '7':
-            show_progress()
+            show_progress(user_name, exercises_completed)
+        elif choice == '8':
+            ex_num = input("Which exercise did you complete? (1-6): ").strip()
+            if ex_num.isdigit() and 1 <= int(ex_num) <= 6:
+                ex_num = int(ex_num)
+                if ex_num not in exercises_completed:
+                    exercises_completed.append(ex_num)
+                    print(f"\n✓ Exercise {ex_num} marked as complete!")
+                else:
+                    print(f"\nExercise {ex_num} was already completed!")
+            else:
+                print("Invalid exercise number!")
+            input("\nPress Enter to continue...")
         elif choice.isdigit() and 1 <= int(choice) <= len(exercises):
             _, exercise_func = exercises[int(choice) - 1]
             exercise_func()
         else:
-            print("Invalid choice. Please enter 0-7.")
+            print("Invalid choice. Please enter 0-8.")
 
 if __name__ == "__main__":
     main()
